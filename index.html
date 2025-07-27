@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎟️ Event Ticketing & Check-In</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1em; max-width: 800px; margin: auto; }
+    section { margin-bottom: 2em; }
+    label, input, button { display: block; margin: 0.5em 0; }
+    .ticket { border: 1px solid #ccc; padding: 1em; margin: 1em 0; border-radius: 6px; }
+    .checked-in { background-color: #d4edda; }
+    #scanner { width: 100%; max-width: 400px; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🎟️ Lokales Ticketing-System</h1>
+
+  <section>
+    <h2>1. Neues Event erstellen</h2>
+    <input type="text" id="eventName" placeholder="Eventname eingeben" />
+    <button onclick="createNewEvent()">Event erstellen</button>
+  </section>
+
+  <section id="eventSection" style="display: none;">
+    <h2>2. Event: <span id="currentEventName"></span></h2>
+
+    <h3>Ticket erstellen</h3>
+    <input type="text" id="firstName" placeholder="Vorname" />
+    <input type="text" id="lastName" placeholder="Nachname" />
+    <input type="email" id="email" placeholder="E-Mail" />
+    <button onclick="createTicket()">Ticket generieren</button>
+
+    <h3>Alle Tickets</h3>
+    <div id="ticketsContainer"></div>
+
+    <h3>📷 Ticket scannen & einchecken</h3>
+    <button onclick="startScanner()">Scanner starten</button>
+    <div id="scanner"></div>
+    <p id="scanResult"></p>
+  </section>
+
+  <!-- QR-Code-Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <!-- HTML5 QR Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <script>
+    let currentEvent = null;
+    let tickets;
+
+    try {
+      tickets = JSON.parse(localStorage.getItem("tickets")) || {};
+    } catch (e) {
+      tickets = {};
+      localStorage.setItem("tickets", JSON.stringify(tickets));
+    }
+
+    function saveTickets() {
+      localStorage.setItem("tickets", JSON.stringify(tickets));
+    }
+
+    function createNewEvent() {
+      const name = document.getElementById("eventName").value.trim();
+      if (!name) return alert("Bitte Eventnamen eingeben.");
+
+      currentEvent = name;
+      if (!tickets[currentEvent]) {
+        tickets[currentEvent] = [];
+        saveTickets();
+      }
+
+      document.getElementById("currentEventName").textContent = currentEvent;
+      document.getElementById("eventSection").style.display = "block";
+      loadTickets();
+    }
+
+    function createTicket() {
+      const first = document.getElementById("firstName").value.trim();
+      const last = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!first || !last || !email) {
+        alert("Bitte alle Felder ausfüllen.");
+        return;
+      }
+
+      const id = Date.now().toString(36);
+      const ticket = { id, first, last, email, checkedIn: false };
+      tickets[currentEvent].push(ticket);
+      saveTickets();
+      loadTickets();
+    }
+
+    function loadTickets() {
+      const container = document.getElementById("ticketsContainer");
+      container.innerHTML = "";
+
+      tickets[currentEvent].forEach(ticket => {
+        const div = document.createElement("div");
+        div.className = "ticket" + (ticket.checkedIn ? " checked-in" : "");
+        div.innerHTML = `
+          <strong>${ticket.first} ${ticket.last}</strong><br>
+          E-Mail: ${ticket.email}<br>
+          Ticket-ID: ${ticket.id}<br>
+          Status: ${ticket.checkedIn ? "✅ Eingecheckt" : "❌ Nicht eingecheckt"}<br>
+          <canvas id="qr-${ticket.id}"></canvas>
+        `;
+        container.appendChild(div);
+
+        QRCode.toCanvas(document.getElementById(`qr-${ticket.id}`), JSON.stringify({
+          event: currentEvent,
+          id: ticket.id
+        }), { width: 100 }, error => {
+          if (error) console.error(error);
+        });
+      });
+    }
+
+    function startScanner() {
+      const scannerDiv = document.getElementById("scanner");
+      scannerDiv.innerHTML = "";
+      const html5QrCode = new Html5Qrcode("scanner");
+
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+              try {
+                const data = JSON.parse(decodedText);
+                if (data.event !== currentEvent) {
+                  alert("❌ Ticket gehört zu einem anderen Event!");
+                  return;
+                }
+
+                const ticket = tickets[currentEvent].find(t => t.id === data.id);
+                if (!ticket) {
+                  alert("❌ Ticket nicht gefunden!");
+                  return;
+                }
+
+                if (ticket.checkedIn) {
+                  alert("⚠️ Bereits eingecheckt!");
+                  return;
+                }
+
+                ticket.checkedIn = true;
+                saveTickets();
+                loadTickets();
+                document.getElementById("scanResult").textContent = `✅ Eingecheckt: ${ticket.first} ${ticket.last}`;
+                html5QrCode.stop();
+              } catch (e) {
+                alert("❌ Ungültiger QR-Code!");
+              }
+            },
+            (error) => {
+              // Scanner läuft weiter trotz fehlerhaften Frames
+            }
+          );
+        } else {
+          alert("Keine Kamera gefunden.");
+        }
+      }).catch(err => {
+        alert("Kamerazugriff fehlgeschlagen: " + err);
+      });
+    }
+  </script>
+</body>
+</html>
