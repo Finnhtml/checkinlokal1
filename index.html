@@ -1,171 +1,478 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎟️ Event Ticketing & Check-In</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 1em; max-width: 800px; margin: auto; }
-    section { margin-bottom: 2em; }
-    label, input, button { display: block; margin: 0.5em 0; }
-    .ticket { border: 1px solid #ccc; padding: 1em; margin: 1em 0; border-radius: 6px; }
-    .checked-in { background-color: #d4edda; }
-    #scanner { width: 100%; max-width: 400px; margin-top: 1em; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TickLocal - Ticketing</title>
+    <style>
+        /* Modernes Reset und Basis-Stile */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f0f2f5; /* Sehr helles Grau */
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Hauptcontainer für den Inhalt */
+        .container {
+            background: #ffffff; /* Weißer Hintergrund für den Inhalt */
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Dezenter Schatten */
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #4a4a4a; /* Dunkelgrau für Überschriften */
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 2.8rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #555; /* Etwas helleres Grau für Unterüberschriften */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0; /* Dezente Linie */
+            padding-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 500;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #666; /* Mittelgrau für Text */
+            font-size: 1.1rem;
+        }
+
+        p strong {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 1.2rem;
+            margin-bottom: 0.4rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d0d0d0; /* Helles Grau für Ränder */
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #444;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #a0a0a0; /* Dunkleres Grau beim Fokus */
+            box-shadow: 0 0 0 3px rgba(160, 160, 160, 0.2);
+            outline: none;
+        }
+
+        button {
+            display: inline-block;
+            padding: 0.9rem 1.8rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            background-color: #8B4513; /* Sattbraun */
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #6a350c; /* Dunkleres Braun beim Hover */
+            transform: translateY(-2px);
+        }
+
+        /* Spezifische Anpassungen für Buttons */
+        .primary-button {
+            background-color: #4CAF50; /* Grün für positive Aktionen */
+        }
+        .primary-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Ticket-Liste Styling */
+        #ticketList {
+            margin-top: 1.5rem;
+            border-top: 1px dashed #e0e0e0; /* Gestrichelte Linie */
+            padding-top: 1.5rem;
+            display: grid; /* Für ein Raster-Layout der Tickets */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsives Raster */
+            gap: 1.5rem; /* Abstand zwischen den Tickets */
+        }
+
+        .ticket-item {
+            background: #fdfdfd; /* Fast weiß für Ticket-Hintergrund */
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .ticket-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .ticket-item strong {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-item img {
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            width: 120px; /* Kleinere QR-Codes */
+            height: 120px;
+        }
+
+        /* Scanner-Modus Styling */
+        #scannerMode {
+            display: none; /* Steuerung per JS */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95); /* Fast schwarzer Hintergrund mit Transparenz */
+            color: lime;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px); /* Leichte Unschärfe für den Hintergrund */
+        }
+
+        #scannerVideo {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            position: absolute; /* Video im Hintergrund */
+            z-index: -1;
+            filter: brightness(0.7); /* Video etwas abdunkeln */
+        }
+
+        #scanResult {
+            position: relative; /* Positionierung innerhalb des Flex-Containers */
+            bottom: auto; /* Entfernt die alte bottom-Eigenschaft */
+            background: rgba(40, 40, 40, 0.9); /* Dunkler Hintergrund für Ergebnisbox */
+            color: white; /* Weißer Text */
+            padding: 1.5rem;
+            border: 2px solid #4CAF50; /* Grüner Rand für Erfolg */
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+            animation: fadeIn 0.5s ease-out; /* Fade-in Animation */
+            min-width: 280px;
+        }
+
+        #scanResult span[style*='red'] {
+            color: #E57373 !important; /* Dezenteres Rot für Fehler */
+            border-color: #E57373 !important;
+            box-shadow: 0 0 20px rgba(229, 115, 115, 0.5);
+        }
+
+        #scanResult span[style*='orange'] {
+            color: #FFB300 !important; /* Dezenteres Orange für Warnung */
+            border-color: #FFB300 !important;
+            box-shadow: 0 0 20px rgba(255, 179, 0, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #scannerMode input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        #scannerMode input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        #scannerMode input:focus {
+            border-color: lime;
+            box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.2);
+        }
+
+        #scannerMode button {
+            background-color: #FFA000; /* Orange für Beenden-Button */
+            margin-top: 1rem;
+            width: auto;
+        }
+        #scannerMode button:hover {
+            background-color: #FF8F00;
+        }
+
+        /* Responsives Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 1.5rem;
+                border-radius: 8px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            button {
+                padding: 0.7rem 1.4rem;
+                font-size: 0.9rem;
+            }
+            #scanResult {
+                font-size: 1.2rem;
+                padding: 1rem;
+            }
+            #ticketList {
+                grid-template-columns: 1fr; /* Eine Spalte auf kleinen Bildschirmen */
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>🎟️ Lokales Ticketing-System</h1>
+    <div class="container">
+        <h1>TickLocal</h1>
+        <p><strong>100 % offline, 100 % kostenlos.</strong><br>Deine Daten gehören dir. Keine Cloud, kein Tracking, kein Backendserver.</p>
 
-  <section>
-    <h2>1. Neues Event erstellen</h2>
-    <input type="text" id="eventName" placeholder="Eventname eingeben" />
-    <button onclick="createNewEvent()">Event erstellen</button>
-  </section>
+        <h2>Neues Event erstellen</h2>
+        <label for="eventName">Eventname:</label>
+        <input id="eventName" type="text" placeholder="Z.B. Sommerfest 2025" title="Name des Events">
 
-  <section id="eventSection" style="display: none;">
-    <h2>2. Event: <span id="currentEventName"></span></h2>
+        <label for="eventDate">Datum des Events:</label>
+        <input id="eventDate" type="date" title="Datum, an dem das Event stattfindet">
 
-    <h3>Ticket erstellen</h3>
-    <input type="text" id="firstName" placeholder="Vorname" />
-    <input type="text" id="lastName" placeholder="Nachname" />
-    <input type="email" id="email" placeholder="E-Mail" />
-    <button onclick="createTicket()">Ticket generieren</button>
+        <label for="eventPin">PIN für Scan-Modus:</label>
+        <input id="eventPin" type="password" placeholder="Mindestens 4 Ziffern" title="PIN zum Beenden des Scan-Modus">
+        <button onclick="createNewEvent()">Event erstellen</button>
 
-    <h3>Alle Tickets</h3>
-    <div id="ticketsContainer"></div>
+        <h2>Tickets</h2>
+        <label for="ticketName">Name des Gastes:</label>
+        <input id="ticketName" type="text" placeholder="Z.B. Max Mustermann" title="Name der Person, für die das Ticket bestimmt ist">
+        <button onclick="addTicket()">Ticket hinzufügen</button>
+        <div id="ticketList"></div>
+        <button onclick="downloadEvent()">Event & Tickets herunterladen</button>
+        <label for="uploadEventFile" style="margin-top:1.5rem;">Event & Tickets hochladen (JSON):</label>
+        <input type="file" id="uploadEventFile" accept="application/json" onchange="uploadEvent(event)" title="Wählen Sie eine Event-JSON-Datei zum Hochladen aus">
 
-    <h3>📷 Ticket scannen & einchecken</h3>
-    <button onclick="startScanner()">Scanner starten</button>
-    <div id="scanner"></div>
-    <p id="scanResult"></p>
-  </section>
+        <h2>Scan-Modus starten</h2>
+        <button onclick="startScanner()">Scan-Modus starten</button>
+    </div>
 
-  <!-- QR-Code-Generator -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <!-- HTML5 QR Scanner -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
+    <div id="scannerMode">
+        <video id="scannerVideo" autoplay muted></video>
+        <div id="scanResult"></div>
+        <input id="exitPinInput" type="password" placeholder="PIN zum Beenden" title="Geben Sie die PIN ein, um den Scan-Modus zu verlassen">
+        <button onclick="showExitPinInput()">Scan-Modus beenden</button>
+    </div>
 
-  <script>
-    let currentEvent = null;
-    let tickets;
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        let eventData = { name: '', date: '', pin: '', tickets: [] };
+        let html5QrCode;
 
-    try {
-      tickets = JSON.parse(localStorage.getItem("tickets")) || {};
-    } catch (e) {
-      tickets = {};
-      localStorage.setItem("tickets", JSON.stringify(tickets));
-    }
-
-    function saveTickets() {
-      localStorage.setItem("tickets", JSON.stringify(tickets));
-    }
-
-    function createNewEvent() {
-      const name = document.getElementById("eventName").value.trim();
-      if (!name) return alert("Bitte Eventnamen eingeben.");
-
-      currentEvent = name;
-      if (!tickets[currentEvent]) {
-        tickets[currentEvent] = [];
-        saveTickets();
-      }
-
-      document.getElementById("currentEventName").textContent = currentEvent;
-      document.getElementById("eventSection").style.display = "block";
-      loadTickets();
-    }
-
-    function createTicket() {
-      const first = document.getElementById("firstName").value.trim();
-      const last = document.getElementById("lastName").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (!first || !last || !email) {
-        alert("Bitte alle Felder ausfüllen.");
-        return;
-      }
-
-      const id = Date.now().toString(36);
-      const ticket = { id, first, last, email, checkedIn: false };
-      tickets[currentEvent].push(ticket);
-      saveTickets();
-      loadTickets();
-    }
-
-    function loadTickets() {
-      const container = document.getElementById("ticketsContainer");
-      container.innerHTML = "";
-
-      tickets[currentEvent].forEach(ticket => {
-        const div = document.createElement("div");
-        div.className = "ticket" + (ticket.checkedIn ? " checked-in" : "");
-        div.innerHTML = `
-          <strong>${ticket.first} ${ticket.last}</strong><br>
-          E-Mail: ${ticket.email}<br>
-          Ticket-ID: ${ticket.id}<br>
-          Status: ${ticket.checkedIn ? "✅ Eingecheckt" : "❌ Nicht eingecheckt"}<br>
-          <canvas id="qr-${ticket.id}"></canvas>
-        `;
-        container.appendChild(div);
-
-        QRCode.toCanvas(document.getElementById(`qr-${ticket.id}`), JSON.stringify({
-          event: currentEvent,
-          id: ticket.id
-        }), { width: 100 }, error => {
-          if (error) console.error(error);
-        });
-      });
-    }
-
-    function startScanner() {
-      const scannerDiv = document.getElementById("scanner");
-      scannerDiv.innerHTML = "";
-      const html5QrCode = new Html5Qrcode("scanner");
-
-      Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-          html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
-            (decodedText) => {
-              try {
-                const data = JSON.parse(decodedText);
-                if (data.event !== currentEvent) {
-                  alert("❌ Ticket gehört zu einem anderen Event!");
-                  return;
-                }
-
-                const ticket = tickets[currentEvent].find(t => t.id === data.id);
-                if (!ticket) {
-                  alert("❌ Ticket nicht gefunden!");
-                  return;
-                }
-
-                if (ticket.checkedIn) {
-                  alert("⚠️ Bereits eingecheckt!");
-                  return;
-                }
-
-                ticket.checkedIn = true;
-                saveTickets();
-                loadTickets();
-                document.getElementById("scanResult").textContent = `✅ Eingecheckt: ${ticket.first} ${ticket.last}`;
-                html5QrCode.stop();
-              } catch (e) {
-                alert("❌ Ungültiger QR-Code!");
-              }
-            },
-            (error) => {
-              // Scanner läuft weiter trotz fehlerhaften Frames
-            }
-          );
-        } else {
-          alert("Keine Kamera gefunden.");
+        function createNewEvent() {
+            eventData.name = document.getElementById("eventName").value;
+            eventData.date = document.getElementById("eventDate").value;
+            eventData.pin = document.getElementById("eventPin").value;
+            eventData.tickets = [];
+            renderTickets();
+            alert("Event erstellt! Jetzt Tickets hinzufügen.");
         }
-      }).catch(err => {
-        alert("Kamerazugriff fehlgeschlagen: " + err);
-      });
-    }
-  </script>
+
+        function addTicket() {
+            const name = document.getElementById("ticketName").value;
+            if (!name) {
+                alert("Bitte gib einen Namen für das Ticket ein.");
+                return;
+            }
+            const id = crypto.randomUUID();
+            eventData.tickets.push({ id, name, checkedIn: false });
+            document.getElementById("ticketName").value = '';
+            renderTickets();
+        }
+
+        function renderTickets() {
+            const list = document.getElementById("ticketList");
+            list.innerHTML = eventData.tickets.map(t => `
+                <div class="ticket-item">
+                    <strong>${t.name}</strong>
+                    <img id="qr-${t.id}" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.id)}">
+                    <button onclick="shareTicket('${t.id}', '${t.name}')">Ticket teilen</button>
+                </div>
+            `).join('');
+        }
+
+        async function shareTicket(ticketId, ticketName) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `Dein Ticket für ${eventData.name}`,
+                        text: `Hallo ${ticketName}! Hier ist dein Ticket für ${eventData.name}. Deine Ticket-ID ist: ${ticketId}. Scanne den beigefügten QR-Code (falls vom Gerät unterstützt).`,
+                        url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticketId)}`
+                    });
+                    console.log('Ticket erfolgreich geteilt!');
+                } catch (error) {
+                    console.error('Fehler beim Teilen des Tickets:', error);
+                    alert('Dein Gerät unterstützt die direkte Freigabe nicht oder es gab einen Fehler. Du kannst den QR-Code manuell speichern oder teilen.');
+                    prompt("Ticket-ID zum Teilen (kopieren und einfügen):", ticketId);
+                }
+            } else {
+                alert('Dein Browser unterstützt die Web Share API nicht. Du kannst den QR-Code manuell speichern oder die Ticket-ID kopieren: ' + ticketId);
+                prompt("Ticket-ID zum Teilen (kopieren und einfügen):", ticketId);
+            }
+        }
+
+        function downloadEvent() {
+            const blob = new Blob([JSON.stringify(eventData)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `${eventData.name.replace(/\s+/g, '_')}_event.json`;
+            a.click();
+        }
+
+        function uploadEvent(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    eventData = data;
+                    renderTickets();
+                    alert("Event geladen: " + eventData.name);
+                } catch {
+                    alert("Fehler beim Laden der Datei.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function startScanner() {
+            if (!eventData.name || !eventData.pin) {
+                alert("Bitte erstelle zuerst ein Event und gib eine PIN ein, bevor du den Scan-Modus startest.");
+                return;
+            }
+
+            document.getElementById("scannerMode").style.display = "flex";
+            document.getElementById("exitPinInput").style.display = "none";
+            const exitButton = document.querySelector("#scannerMode button");
+            exitButton.textContent = "Scan-Modus beenden";
+            exitButton.onclick = showExitPinInput;
+
+
+            html5QrCode = new Html5Qrcode("scannerVideo");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 },
+                (decodedText) => handleScan(decodedText),
+                (error) => {}
+            ).catch(err => {
+                alert("Kamera konnte nicht gestartet werden: " + err);
+                document.getElementById("scannerMode").style.display = "none";
+            });
+        }
+
+        function handleScan(decodedText) {
+            const ticket = eventData.tickets.find(t => t.id === decodedText);
+            const resultBox = document.getElementById("scanResult");
+            if (ticket) {
+                if (!ticket.checkedIn) {
+                    ticket.checkedIn = true;
+                    resultBox.innerHTML = `<strong>${ticket.name}</strong><br><span style='color:lime'>✔️ Eingecheckt</span>`;
+                    resultBox.style.borderColor = '#4CAF50'; /* Grüner Rand */
+                    resultBox.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.5)';
+                } else {
+                    resultBox.innerHTML = `<strong>${ticket.name}</strong><br><span style='color:orange'>⚠️ Bereits eingecheckt</span>`;
+                    resultBox.style.borderColor = '#FFB300'; /* Oranger Rand */
+                    resultBox.style.boxShadow = '0 0 20px rgba(255, 179, 0, 0.5)';
+                }
+            } else {
+                resultBox.innerHTML = `<span style='color:red'>❌ Unbekanntes Ticket</span>`;
+                resultBox.style.borderColor = '#E57373'; /* Roter Rand */
+                resultBox.style.boxShadow = '0 0 20px rgba(229, 115, 115, 0.5)';
+            }
+            resultBox.style.display = "block";
+            setTimeout(() => resultBox.style.display = "none", 5000);
+            renderTickets();
+        }
+
+        function showExitPinInput() {
+            const exitPinInput = document.getElementById("exitPinInput");
+            const exitButton = document.querySelector("#scannerMode button");
+
+            exitPinInput.style.display = "block";
+            exitPinInput.focus();
+
+            exitButton.textContent = "Bestätigen & Beenden";
+            exitButton.onclick = exitScanMode;
+        }
+
+        function exitScanMode() {
+            const enteredPin = document.getElementById("exitPinInput").value;
+            const exitButton = document.querySelector("#scannerMode button");
+
+            if (enteredPin === eventData.pin && eventData.pin !== '') {
+                html5QrCode.stop().then(() => {
+                    document.getElementById("scannerMode").style.display = "none";
+                    document.getElementById("exitPinInput").value = '';
+                    document.getElementById("exitPinInput").style.display = "none";
+
+                    exitButton.textContent = "Scan-Modus beenden";
+                    exitButton.onclick = showExitPinInput;
+                }).catch(err => console.warn("Kamera konnte nicht gestoppt werden:", err));
+            } else {
+                alert("Falscher PIN oder keine PIN für dieses Event gesetzt!");
+            }
+        }
+    </script>
 </body>
 </html>
