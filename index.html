@@ -235,6 +235,7 @@
         #scannerMode input:focus {
             border-color: lime;
             box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.2);
+            outline: none;
         }
 
         #scannerMode button {
@@ -244,6 +245,185 @@
         }
         #scannerMode button:hover {
             background-color: #FF8F00;
+        }
+
+        /* Anleitung Styling */
+        #instructions {
+            background: #fdfdfd; /* Weißer Hintergrund für die Anleitung */
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        #instructions ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+            padding-left: 0;
+        }
+        #instructions li {
+            margin-bottom: 0.8rem;
+            color: #555;
+            font-size: 1rem;
+        }
+        #instructions h3 {
+            color: #4a4a4a;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+        #instructions-toggle-button {
+            display: block; /* Button nimmt volle Breite ein */
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
+            background-color: #6c757d; /* Dunkelgrau für den Toggle-Button */
+        }
+        #instructions-toggle-button:hover {
+            background-color: #5a6268;
+        }
+
+        /* Multi-Step Form Styling */
+        .step-content {
+            display: none; /* Standardmäßig alle Schritte ausblenden */
+            padding-top: 1.5rem;
+        }
+
+        #progressbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Zentriert die Elemente vertikal */
+            width: 100%;
+            margin-bottom: 2rem;
+            position: relative;
+            --progress-width: 0%; /* CSS-Variable für die Breite des Fortschritts */
+        }
+
+        #progressbar::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: #ddd; /* Grauer Hintergrund für die gesamte Linie */
+            top: 50%; /* Positioniert den Strich in der Mitte der Progressbar */
+            left: 0;
+            transform: translateY(-50%); /* Zentriert den Strich vertikal exakt */
+            z-index: 1;
+        }
+        
+        #progressbar::after { /* Ein zweites Pseudo-Element für den farbigen Fortschritt */
+            content: '';
+            position: absolute;
+            width: var(--progress-width); /* Nutzt die JS-gesteuerte Variable */
+            height: 2px;
+            background-color: #4CAF50; /* Grüne Fortschrittsfarbe */
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 1;
+            transition: width 0.3s ease; /* Weicher Übergang beim Fortschritt */
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2; /* Kreise über dem Strich */
+            flex: 1; /* Gleichmäßige Verteilung */
+        }
+
+        .step-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #bbb; /* Leerer Kreis */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid #bbb;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .step-circle.active {
+            background-color: #8B4513; /* Aktiver Kreis: Braun */
+            border-color: #8B4513;
+        }
+
+        .step-circle.completed {
+            background-color: #4CAF50; /* Abgeschlossener Kreis: Grün */
+            border-color: #4CAF50;
+        }
+
+        .step-title {
+            margin-top: 0.5rem;
+            color: #777;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .step-circle.active + .step-title,
+        .step-circle.completed + .step-title {
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Navigation Buttons */
+        .navigation-buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .navigation-buttons button {
+            flex-grow: 1;
+            margin: 0;
+            background-color: #8B4513; /* Braun für Standard-Navigation */
+        }
+        .navigation-buttons button.prev {
+            background-color: #6c757d; /* Grau für Zurück */
+        }
+        .navigation-buttons button.prev:hover {
+            background-color: #5a6268;
+        }
+        .navigation-buttons button.next {
+             background-color: #4CAF50; /* Grün für Weiter */
+        }
+        .navigation-buttons button.next:hover {
+             background-color: #45a049;
+        }
+        
+        /* NEU: Styling für die Nachrichtenanzeige */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Grün für Erfolgsmeldungen */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000; /* Ganz oben */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, top 0.5s ease-in-out;
+            min-width: 280px;
+            text-align: center;
+            pointer-events: none; /* Ermöglicht Klicks auf Elemente darunter */
+        }
+
+        #messageBox.show {
+            opacity: 1;
+            top: 30px; /* Rutscht leicht nach unten für den Effekt */
+        }
+
+        #messageBox.error {
+            background-color: #f44336; /* Rot für Fehlermeldungen */
+        }
+
+        #messageBox.warning {
+            background-color: #ff9800; /* Orange für Warnungen */
         }
 
         /* Responsives Design */
@@ -275,40 +455,127 @@
             #ticketList {
                 grid-template-columns: 1fr; /* Eine Spalte auf kleinen Bildschirmen */
             }
+            #instructions {
+                padding: 1rem;
+            }
+            #instructions h3 {
+                font-size: 1.2rem;
+            }
+
+            /* Fortschrittsbalken auf kleinen Bildschirmen */
+            #progressbar {
+                flex-wrap: wrap;
+                margin-bottom: 1.5rem;
+                /* Die ::before und ::after Linien werden auf kleinen Bildschirmen ausgeblendet,
+                   da die Kreise nicht mehr in einer Reihe sind. */
+                &::before, &::after {
+                    display: none;
+                }
+            }
+            .step-item {
+                flex: none; /* Nicht mehr gleichmäßig verteilen, sondern feste Größe */
+                width: 50%; /* Zwei Schritte pro Zeile */
+                margin-bottom: 1.5rem;
+            }
+            
+            #messageBox {
+                width: 90%;
+                left: 5%;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
+    <div id="messageBox"></div>
+
     <div class="container">
         <h1>TickLocal</h1>
         <p><strong>100 % offline, 100 % kostenlos.</strong><br>Deine Daten gehören dir. Keine Cloud, kein Tracking, kein Backendserver.</p>
 
-        <h2>Neues Event erstellen</h2>
-        <label for="eventName">Eventname:</label>
-        <input id="eventName" type="text" placeholder="Z.B. Sommerfest 2025" title="Name des Events">
+        <button id="instructions-toggle-button" onclick="toggleInstructions()">Anleitung anzeigen</button>
+        <div id="instructions" style="display: none;"> <h3>So funktioniert TickLocal:</h3>
+            <ol>
+                <li>Gib einen **Eventnamen**, das **Datum** und eine **PIN** für den Scan-Modus ein und klicke auf "Event erstellen".</li>
+                <li>Füge nacheinander die **Namen der Gäste** hinzu und klicke auf "Ticket hinzufügen". Für jeden Gast wird ein **QR-Code** generiert.</li>
+                <li>Du kannst die Tickets mit dem "Ticket teilen"-Button an die jeweiligen Personen senden (z.B. per Messenger oder E-Mail). Die Person erhält die Ticket-ID und kann den QR-Code scannen.</li>
+                <li>Um die Ticket-Daten zu speichern, klicke auf **"Event & Tickets herunterladen"**. Dies speichert eine JSON-Datei auf deinem Gerät.</li>
+                <li>Um ein gespeichertes Event zu laden, klicke auf "Event & Tickets hochladen" und wähle die entsprechende JSON-Datei aus.</li>
+                <li>Klicke auf **"Scan-Modus starten"**, um Tickets beim Einlass zu überprüfen. Deine Kamera wird aktiviert.</li>
+                <li>Scanne die **QR-Codes der Tickets**. Die App zeigt an, ob das Ticket gültig oder bereits eingecheckt ist.</li>
+                <li>Um den Scan-Modus zu beenden, klicke auf "Scan-Modus beenden", gib deine **PIN** ein und klicke auf "Bestätigen & Beenden".</li>
+            </ol>
+            <p>Deine Daten bleiben immer **lokal auf deinem Gerät** und werden niemals hochgeladen.</p>
+        </div>
+        <div id="progressbar">
+            <div class="step-item">
+                <div class="step-circle" id="circle1">1</div>
+                <div class="step-title">Event erstellen</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle" id="circle2">2</div>
+                <div class="step-title">Tickets</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle" id="circle3">3</div>
+                <div class="step-title">Speichern / Laden</div>
+            </div>
+             <div class="step-item">
+                <div class="step-circle" id="circle4">4</div>
+                <div class="step-title">Scanner</div>
+            </div>
+        </div>
+        <div id="step1" class="step-content">
+            <h2>Event-Details erstellen</h2>
+            <label for="eventName">Eventname:</label>
+            <input id="eventName" type="text" placeholder="Z.B. Sommerfest 2025" title="Name des Events">
 
-        <label for="eventDate">Datum des Events:</label>
-        <input id="eventDate" type="date" title="Datum, an dem das Event stattfindet">
+            <label for="eventDate">Datum des Events:</label>
+            <input id="eventDate" type="date" title="Datum, an dem das Event stattfindet">
 
-        <label for="eventPin">PIN für Scan-Modus:</label>
-        <input id="eventPin" type="password" placeholder="Mindestens 4 Ziffern" title="PIN zum Beenden des Scan-Modus">
-        <button onclick="createNewEvent()">Event erstellen</button>
+            <label for="eventPin">PIN für Scan-Modus:</label>
+            <input id="eventPin" type="password" placeholder="Mindestens 4 Ziffern" title="PIN zum Beenden des Scan-Modus">
+            <div class="navigation-buttons">
+                <button onclick="nextStep()" class="next">Event erstellen & Weiter</button>
+            </div>
+        </div>
 
-        <h2>Tickets</h2>
-        <label for="ticketName">Name des Gastes:</label>
-        <input id="ticketName" type="text" placeholder="Z.B. Max Mustermann" title="Name der Person, für die das Ticket bestimmt ist">
-        <button onclick="addTicket()">Ticket hinzufügen</button>
-        <div id="ticketList"></div>
-        <button onclick="downloadEvent()">Event & Tickets herunterladen</button>
-        <label for="uploadEventFile" style="margin-top:1.5rem;">Event & Tickets hochladen (JSON):</label>
-        <input type="file" id="uploadEventFile" accept="application/json" onchange="uploadEvent(event)" title="Wählen Sie eine Event-JSON-Datei zum Hochladen aus">
+        <div id="step2" class="step-content">
+            <h2>Tickets hinzufügen</h2>
+            <p>Aktuelles Event: <strong id="currentEventName"></strong></p>
+            <label for="ticketName">Name des Gastes:</label>
+            <input id="ticketName" type="text" placeholder="Z.B. Max Mustermann" title="Name der Person, für die das Ticket bestimmt ist">
+            <button onclick="addTicket()">Ticket hinzufügen</button>
+            <div id="ticketList"></div>
+            <div class="navigation-buttons">
+                <button onclick="prevStep()" class="prev">Zurück</button>
+                <button onclick="nextStep()" class="next">Weiter zu Speichern/Laden</button>
+            </div>
+        </div>
 
-        <h2>Scan-Modus starten</h2>
-        <button onclick="startScanner()">Scan-Modus starten</button>
-    </div>
+        <div id="step3" class="step-content">
+            <h2>Event speichern oder laden</h2>
+            <p>Hier kannst du dein Event inklusive aller Tickets speichern oder ein vorhandenes Event laden.</p>
+            <button onclick="downloadEvent()">Event & Tickets herunterladen</button>
+            <label for="uploadEventFile" style="margin-top:1.5rem;">Event & Tickets hochladen (JSON):</label>
+            <input type="file" id="uploadEventFile" accept="application/json" onchange="uploadEvent(event)" title="Wählen Sie eine Event-JSON-Datei zum Hochladen aus">
+            <div class="navigation-buttons">
+                <button onclick="prevStep()" class="prev">Zurück</button>
+                <button onclick="nextStep()" class="next">Weiter zum Scanner</button>
+            </div>
+        </div>
 
-    <div id="scannerMode">
-        <video id="scannerVideo" autoplay muted></video>
+        <div id="step4" class="step-content">
+            <h2>Scan-Modus starten</h2>
+            <p>Starte den Scan-Modus, um Tickets zu überprüfen. Halte dein Gerät bereit!</p>
+            <button onclick="startScanner()">Scan-Modus starten</button>
+            <div class="navigation-buttons">
+                <button onclick="prevStep()" class="prev">Zurück</button>
+            </div>
+        </div>
+
+    </div> <div id="scannerMode">
+        <video id="scannerVideo" autoplay playsinline></video>
         <div id="scanResult"></div>
         <input id="exitPinInput" type="password" placeholder="PIN zum Beenden" title="Geben Sie die PIN ein, um den Scan-Modus zu verlassen">
         <button onclick="showExitPinInput()">Scan-Modus beenden</button>
@@ -318,26 +585,135 @@
     <script>
         let eventData = { name: '', date: '', pin: '', tickets: [] };
         let html5QrCode;
+        let currentStep = 1; // Startet immer bei Schritt 1
 
-        function createNewEvent() {
-            eventData.name = document.getElementById("eventName").value;
-            eventData.date = document.getElementById("eventDate").value;
-            eventData.pin = document.getElementById("eventPin").value;
-            eventData.tickets = [];
-            renderTickets();
-            alert("Event erstellt! Jetzt Tickets hinzufügen.");
+        // Initialisierung beim Laden der Seite
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(currentStep);
+            // Überprüfe, ob es gespeicherte Event-Daten im Local Storage gibt
+            const storedEvent = localStorage.getItem('tickLocalEventData');
+            if (storedEvent) {
+                try {
+                    eventData = JSON.parse(storedEvent);
+                    document.getElementById("eventName").value = eventData.name || '';
+                    document.getElementById("eventDate").value = eventData.date || '';
+                    document.getElementById("eventPin").value = eventData.pin || '';
+                    renderTickets();
+                    showMessage("Vorhandenes Event geladen: " + eventData.name, "info");
+                } catch (e) {
+                    console.error("Fehler beim Laden der Event-Daten aus dem Local Storage:", e);
+                    showMessage("Fehler beim Laden alter Event-Daten.", "error");
+                }
+            }
+        });
+
+        // Benutzerdefinierte Nachrichtenanzeige (Toast-Nachricht)
+        function showMessage(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = ''; // Alle bestehenden Klassen entfernen
+            messageBox.classList.add(type); // Neuen Typ hinzufügen (success, error, warning)
+            messageBox.classList.add('show'); // 'show' Klasse für Sichtbarkeit und Animation hinzufügen
+
+            // Nachricht nach 3 Sekunden (3000ms) ausblenden
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        }
+
+        function showStep(stepNum) {
+            // Alle Schritte ausblenden
+            document.querySelectorAll('.step-content').forEach(step => {
+                step.style.display = 'none';
+            });
+
+            // Den gewünschten Schritt anzeigen
+            document.getElementById(`step${stepNum}`).style.display = 'block';
+
+            currentStep = stepNum;
+            updateProgressBar();
+
+            // Event-Namen in Schritt 2 aktualisieren, falls vorhanden
+            if (stepNum === 2 && eventData.name) {
+                document.getElementById('currentEventName').textContent = eventData.name;
+            }
+        }
+
+        function updateProgressBar() {
+            const totalSteps = document.querySelectorAll('.step-circle').length;
+            const progressbar = document.getElementById('progressbar');
+            
+            let progressPercentage = 0;
+            if (totalSteps > 1) {
+                // Berechne den Prozentsatz so, dass die Linie bis zum Mittelpunkt des aktuellen Kreises reicht.
+                // Jeder "Spalt" zwischen den Kreisen ist 1/(totalSteps - 1) der Gesamtbreite.
+                // Der Startpunkt ist 0, der Endpunkt (totalSteps-1) * (1/(totalSteps-1)) = 100%.
+                // Wir nehmen den Prozentsatz basierend auf dem aktuellen Schritt minus 1 (da 0-indiziert für Segmente).
+                progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            }
+            
+            progressbar.style.setProperty('--progress-width', `${progressPercentage}%`);
+
+
+            document.querySelectorAll('.step-circle').forEach((circle, index) => {
+                const stepNumber = index + 1;
+                circle.classList.remove('active', 'completed');
+
+                if (stepNumber < currentStep) {
+                    circle.classList.add('completed');
+                } else if (stepNumber === currentStep) {
+                    circle.classList.add('active');
+                }
+            });
+        }
+
+
+        function nextStep() {
+            if (currentStep === 1) {
+                // Validierung für Schritt 1 (Event erstellen)
+                const eventName = document.getElementById("eventName").value;
+                const eventDate = document.getElementById("eventDate").value;
+                const eventPin = document.getElementById("eventPin").value;
+
+                if (!eventName || !eventDate || !eventPin) {
+                    showMessage("Bitte fülle alle Felder für das Event aus!", "warning");
+                    return;
+                }
+                eventData.name = eventName;
+                eventData.date = eventDate;
+                eventData.pin = eventPin;
+                // Event initialisieren, falls nicht schon geschehen
+                if (eventData.tickets.length === 0) { // Nur initialisieren, wenn neu erstellt
+                    eventData.tickets = [];
+                }
+                saveEventToLocalStorage(); // Event nach Erstellung speichern
+                showMessage("Event erfolgreich erstellt!", "success");
+                renderTickets(); // Tickets auch in Schritt 2 anzeigen
+            }
+
+            if (currentStep < 4) { // Angenommen, es gibt 4 Schritte
+                showStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
         }
 
         function addTicket() {
             const name = document.getElementById("ticketName").value;
             if (!name) {
-                alert("Bitte gib einen Namen für das Ticket ein.");
+                showMessage("Bitte gib einen Namen für das Ticket ein.", "warning");
                 return;
             }
             const id = crypto.randomUUID();
             eventData.tickets.push({ id, name, checkedIn: false });
             document.getElementById("ticketName").value = '';
             renderTickets();
+            saveEventToLocalStorage(); // Event nach Ticket-Hinzufügen speichern
+            showMessage("Ticket hinzugefügt!", "success"); // Bestätigung für Ticket hinzufügen
         }
 
         function renderTickets() {
@@ -356,27 +732,38 @@
                 try {
                     await navigator.share({
                         title: `Dein Ticket für ${eventData.name}`,
-                        text: `Hallo ${ticketName}! Hier ist dein Ticket für ${eventData.name}. Deine Ticket-ID ist: ${ticketId}. Scanne den beigefügten QR-Code (falls vom Gerät unterstützt).`,
-                        url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticketId)}`
+                        text: `Hallo ${ticketName}! Hier ist dein Ticket für ${eventData.name}. Deine Ticket-ID ist: ${ticketId}.`,
+                        // URL hier nicht zwingend notwendig, wenn QR-Code nicht direkt geteilt wird
+                        // url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticketId)}`
                     });
                     console.log('Ticket erfolgreich geteilt!');
                 } catch (error) {
                     console.error('Fehler beim Teilen des Tickets:', error);
-                    alert('Dein Gerät unterstützt die direkte Freigabe nicht oder es gab einen Fehler. Du kannst den QR-Code manuell speichern oder teilen.');
-                    prompt("Ticket-ID zum Teilen (kopieren und einfügen):", ticketId);
+                    showMessage('Dein Gerät unterstützt die direkte Freigabe nicht oder es gab einen Fehler.', 'warning');
                 }
             } else {
-                alert('Dein Browser unterstützt die Web Share API nicht. Du kannst den QR-Code manuell speichern oder die Ticket-ID kopieren: ' + ticketId);
-                prompt("Ticket-ID zum Teilen (kopieren und einfügen):", ticketId);
+                showMessage('Dein Browser unterstützt die Web Share API nicht. Die Ticket-ID wurde in die Zwischenablage kopiert.', 'warning');
+                 // Direktes Kopieren versuchen
+                 navigator.clipboard.writeText(ticketId).then(() => {
+                    showMessage("Ticket-ID in Zwischenablage kopiert!", "success");
+                 }).catch(err => {
+                    console.error('Fehler beim Kopieren der Ticket-ID:', err);
+                 });
             }
         }
 
         function downloadEvent() {
+            if (!eventData.name) {
+                showMessage("Bitte erstelle oder lade zuerst ein Event, bevor du es herunterlädst.", "warning");
+                return;
+            }
             const blob = new Blob([JSON.stringify(eventData)], { type: "application/json" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = `${eventData.name.replace(/\s+/g, '_')}_event.json`;
             a.click();
+            URL.revokeObjectURL(a.href); // Speicher freigeben
+            showMessage("Event heruntergeladen!", "success");
         }
 
         function uploadEvent(e) {
@@ -386,19 +773,39 @@
             reader.onload = function(evt) {
                 try {
                     const data = JSON.parse(evt.target.result);
-                    eventData = data;
-                    renderTickets();
-                    alert("Event geladen: " + eventData.name);
-                } catch {
-                    alert("Fehler beim Laden der Datei.");
+                    // Grundlegende Validierung der geladenen Daten
+                    if (data && data.name && data.pin && Array.isArray(data.tickets)) {
+                        eventData = data;
+                        document.getElementById("eventName").value = eventData.name || '';
+                        document.getElementById("eventDate").value = eventData.date || '';
+                        document.getElementById("eventPin").value = eventData.pin || '';
+                        renderTickets();
+                        saveEventToLocalStorage(); // Geladenes Event speichern
+                        showMessage("Event geladen: " + eventData.name, "success");
+                    } else {
+                        showMessage("Ungültiges Event-Format in der Datei.", "error");
+                    }
+                } catch (err) {
+                    console.error("Fehler beim Parsen der JSON-Datei:", err);
+                    showMessage("Fehler beim Laden der Datei. Ist es eine gültige Event-JSON-Datei?", "error");
                 }
             };
             reader.readAsText(file);
         }
 
+        function saveEventToLocalStorage() {
+            try {
+                localStorage.setItem('tickLocalEventData', JSON.stringify(eventData));
+                console.log("Event-Daten im Local Storage gespeichert.");
+            } catch (e) {
+                console.error("Fehler beim Speichern im Local Storage:", e);
+                showMessage("Speichern der Daten fehlgeschlagen (evtl. Speicher voll).", "error");
+            }
+        }
+
         function startScanner() {
             if (!eventData.name || !eventData.pin) {
-                alert("Bitte erstelle zuerst ein Event und gib eine PIN ein, bevor du den Scan-Modus startest.");
+                showMessage("Bitte erstelle zuerst ein Event und gib eine PIN ein, bevor du den Scan-Modus startest.", "warning");
                 return;
             }
 
@@ -408,16 +815,43 @@
             exitButton.textContent = "Scan-Modus beenden";
             exitButton.onclick = showExitPinInput;
 
+            // Stelle sicher, dass html5QrCode gestoppt ist, falls es noch läuft
+            if (html5QrCode) {
+                html5QrCode.stop().catch(err => console.warn("Vorheriger Scanner konnte nicht gestoppt werden:", err));
+            }
 
             html5QrCode = new Html5Qrcode("scannerVideo");
+            
+            // Versuche, die Kamera zu starten
             html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
+                // Camera facing mode: "environment" (rückseitige Kamera), "user" (Frontkamera)
+                // Oder deviceId aus Html5Qrcode.getCameras()
+                { facingMode: "environment" }, 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 }, // QR-Box-Größe
+                    disableFlip: false // Standardmäßig false, kann bei Problemen auf true gesetzt werden
+                },
                 (decodedText) => handleScan(decodedText),
-                (error) => {}
+                (errorMessage) => { 
+                    // Diese Callback-Funktion wird bei "Frame-Fehlern" aufgerufen, nicht bei Startfehlern.
+                    // Bei einem echten Startfehler fängt das .catch() diesen ab.
+                    // console.warn("Scanner-Fehler (Frame):", errorMessage); // Nur für Debugging, kann zu vielen Nachrichten führen
+                }
             ).catch(err => {
-                alert("Kamera konnte nicht gestartet werden: " + err);
-                document.getElementById("scannerMode").style.display = "none";
+                // Dieser Block fängt Fehler beim Starten der Kamera ab
+                console.error("Fehler beim Starten der Kamera:", err); // Detaillierte Fehlermeldung in der Konsole
+                if (err.name === "NotAllowedError") {
+                    showMessage("Kamerazugriff verweigert. Bitte erlaube den Zugriff in den Browser-Einstellungen.", "error");
+                } else if (err.name === "NotFoundError" || err.name === "OverconstrainedError") {
+                    showMessage("Keine geeignete Kamera gefunden oder verfügbar. Stelle sicher, dass eine Kamera angeschlossen und nicht von einer anderen App belegt ist.", "error");
+                } else if (err.name === "AbortError") {
+                     showMessage("Kamera-Start abgebrochen (evtl. schon aktiv oder Konflikt).", "error");
+                }
+                else {
+                    showMessage("Kamera konnte nicht gestartet werden: " + err.message, "error");
+                }
+                document.getElementById("scannerMode").style.display = "none"; // Scanner-Modus ausblenden
             });
         }
 
@@ -428,21 +862,26 @@
                 if (!ticket.checkedIn) {
                     ticket.checkedIn = true;
                     resultBox.innerHTML = `<strong>${ticket.name}</strong><br><span style='color:lime'>✔️ Eingecheckt</span>`;
-                    resultBox.style.borderColor = '#4CAF50'; /* Grüner Rand */
+                    resultBox.style.borderColor = '#4CAF50';
                     resultBox.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.5)';
+                    showMessage(`${ticket.name} erfolgreich eingecheckt!`, "success"); // Nachricht für erfolgreichen Check-in
+                    saveEventToLocalStorage(); // Statusänderung speichern
                 } else {
                     resultBox.innerHTML = `<strong>${ticket.name}</strong><br><span style='color:orange'>⚠️ Bereits eingecheckt</span>`;
-                    resultBox.style.borderColor = '#FFB300'; /* Oranger Rand */
+                    resultBox.style.borderColor = '#FFB300';
                     resultBox.style.boxShadow = '0 0 20px rgba(255, 179, 0, 0.5)';
+                    showMessage(`${ticket.name} ist bereits eingecheckt.`, "warning"); // Nachricht für bereits eingecheckt
                 }
             } else {
                 resultBox.innerHTML = `<span style='color:red'>❌ Unbekanntes Ticket</span>`;
-                resultBox.style.borderColor = '#E57373'; /* Roter Rand */
+                resultBox.style.borderColor = '#E57373';
                 resultBox.style.boxShadow = '0 0 20px rgba(229, 115, 115, 0.5)';
+                showMessage("Unbekanntes Ticket!", "error"); // Nachricht für unbekanntes Ticket
             }
             resultBox.style.display = "block";
+            // Zeige das Scan-Ergebnis auf der Scanner-Oberfläche für eine kurze Zeit
             setTimeout(() => resultBox.style.display = "none", 5000);
-            renderTickets();
+            renderTickets(); // Aktualisiere die Ticketliste im Hintergrund
         }
 
         function showExitPinInput() {
@@ -461,16 +900,53 @@
             const exitButton = document.querySelector("#scannerMode button");
 
             if (enteredPin === eventData.pin && eventData.pin !== '') {
-                html5QrCode.stop().then(() => {
+                // Nur stoppen, wenn html5QrCode auch initialisiert wurde
+                if (html5QrCode && html5QrCode.is == 'function') { // Prüfe ob .isRunning verfügbar ist (ab html5-qrcode v2.x)
+                    if (html5QrCode.isScanning) { // html5-qrcode v2.x
+                        html5QrCode.stop().then(() => {
+                            document.getElementById("scannerMode").style.display = "none";
+                            document.getElementById("exitPinInput").value = '';
+                            document.getElementById("exitPinInput").style.display = "none";
+
+                            exitButton.textContent = "Scan-Modus beenden";
+                            exitButton.onclick = showExitPinInput;
+                            showMessage("Scan-Modus erfolgreich beendet.", "success");
+                        }).catch(err => {
+                            console.warn("Kamera konnte nicht gestoppt werden:", err);
+                            showMessage("Fehler beim Beenden der Kamera.", "error"); // Fehlermeldung
+                        });
+                    } else { // Fallback für ältere html5-qrcode-Versionen oder wenn nicht gescannt wird
+                         document.getElementById("scannerMode").style.display = "none";
+                         document.getElementById("exitPinInput").value = '';
+                         document.getElementById("exitPinInput").style.display = "none";
+                         exitButton.textContent = "Scan-Modus beenden";
+                         exitButton.onclick = showExitPinInput;
+                         showMessage("Scan-Modus erfolgreich beendet.", "success");
+                    }
+                } else { // Wenn html5QrCode nicht initialisiert wurde
                     document.getElementById("scannerMode").style.display = "none";
                     document.getElementById("exitPinInput").value = '';
                     document.getElementById("exitPinInput").style.display = "none";
-
                     exitButton.textContent = "Scan-Modus beenden";
                     exitButton.onclick = showExitPinInput;
-                }).catch(err => console.warn("Kamera konnte nicht gestoppt werden:", err));
+                    showMessage("Scan-Modus erfolgreich beendet.", "success");
+                }
             } else {
-                alert("Falscher PIN oder keine PIN für dieses Event gesetzt!");
+                showMessage("Falscher PIN oder keine PIN für dieses Event gesetzt!", "error");
+            }
+        }
+
+        // Anleitung ein- und ausblenden
+        function toggleInstructions() {
+            const instructionsDiv = document.getElementById("instructions");
+            const toggleButton = document.getElementById("instructions-toggle-button");
+
+            if (instructionsDiv.style.display === "none") {
+                instructionsDiv.style.display = "block";
+                toggleButton.textContent = "Anleitung ausblenden";
+            } else {
+                instructionsDiv.style.display = "none";
+                toggleButton.textContent = "Anleitung anzeigen";
             }
         }
     </script>
